@@ -32,7 +32,8 @@ This happens before the user is given a prompt and after successful login.
 ### Updating the pam file:
 The below changes will affect all logins (local, ssh etc.) If you wish to do just ssh, then do something different. **Please understand what changes your are making and their impact before you do it**
 
-In the file: `/etc/pam.d/system-login` add the new line
+In the file: `/etc/pam.d/system-login` add the new line.
+
 Go from this:
 ```
 session    include    system-auth
