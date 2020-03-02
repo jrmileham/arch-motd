@@ -1,2 +1,2 @@
-# arch-motd
+# Arch MOTD
 Arch Linux MOTD
