@@ -2,6 +2,9 @@
 
 ![Screenshot of MOTD](screenshot/Arch-Host_motd.png)
 
+## WARNING
+[07-Sept-2020] A linux pam update arrived in August 2020: `pam-1.4.x` and `pambase 20200721.x`. This update changes the `/etc/pam.d/system-login` and might cause conflicts with changes by the steps below. This protentially prevents user login (affecting `sudo` and `su` too) after update. **Make sure you back up the `/etc/pam.d/system-login` before making changes and check it after the `pam 1.4.x` update has been applied to your system**
+
 ## Features
 Pretty self explanatory. It works for Arch linux on:
 -  x86_64 machines (Intel/AMD based)
