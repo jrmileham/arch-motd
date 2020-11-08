@@ -29,7 +29,16 @@ SERVICES_RUNNING=`systemctl | grep running | wc -l`
 FAILED_SERVICES=`systemctl status | grep Failed | head -n1 | awk {'print $2'}`
 NET_INTERFACE=`ip -o link show | grep "state UP" | sed "s|:||g" | awk {'print $2'}`
 IP_ADDRESS=`ip -4 -o address show $NET_INTERFACE | grep inet | sed "s|:||g" | awk {'print $4'}`
+LOCAL_TIME=`timedatectl status | grep "Local time" | sed "s|\s* Local time: ||g"`
+NTP_SERVICE_STATUS=`timedatectl status | grep "NTP service" | sed "s|\s* NTP service: ||g" | awk {'print $1'}`
+TIME_SYNCED=`timedatectl status | grep "clock synchronized" | sed "s|.* clock synchronized: ||g" | awk {'print $1'}`
+TIME_ZONE=`timedatectl status | grep "Time zone" | sed "s|.* Time zone: ||g" | awk {'print $1'}`
 
+if [ "$TIME_SYNCED" == "yes" ]; then 
+  TIME_SYNC_STATUS="Synchronised"
+else 
+  TIME_SYNC_STATUS="NOT Synchronised"
+fi
 
 if [ "$CPU_VENDOR" == "ARM" ]; then
   BOOT_TYPE="PI"
@@ -60,21 +69,21 @@ CPU_TEMP=`/opt/vc/bin/vcgencmd measure_temp | sed "s/=/ /" | awk {'print $2'}`
 
   echo -e "
        $B. $W 
-      $B/#\ $W                     _     $B _ _                   $W _ 
-     $B/###\ $W      __ _ _ __ ___| |__  $B| (_)_ __  _   ___  __ $W| |  _   ___ __  __ 
-    $B/#####\ $W    / _' | '__/ __| '_ \ $B| | | '_ \| | | \ \/ / $W| | / \ | _ \  \/  |
-   $B/##.-.##\ $W  | (_| | | | (__| | | |$B| | | | | | |_| |>  <  $W| |/ ^ \|   / |\/| |
-  $B/##(   )##\ $W  \__,_|_|  \___|_| |_|$B|_|_|_| |_|\__._/_/\_\ $W| /_/ \_\_|_\_|  |_|
- $B/#.--   --.#\ $W                                             $W|_|   $G>$R Raspberry Pi$W
+      $B/#\ $W                    _     $B _ _                   $W _ 
+     $B/###\ $W     __ _ _ __ ___| |__  $B| (_)_ __  _   ___  __ $W| |  _   ___ __  __ 
+    $B/#####\ $W   / _' | '__/ __| '_ \ $B| | | '_ \| | | \ \/ / $W| | / \ | _ \  \/  |
+   $B/##.-.##\ $W | (_| | | | (__| | | |$B| | | | | | |_| |>  <  $W| |/ ^ \|   / |\/| |
+  $B/##(   )##\ $W \__,_|_|  \___|_| |_|$B|_|_|_| |_|\__._/_/\_\ $W| /_/ \_\_|_\_|  |_|
+ $B/#.--   --.#\ $W                                            $W|_|   $G>$R Raspberry Pi$W
 $B/'           '\ $W> $G$HOSTNAME" > $motd
 else
   echo -e "
        $B. $W
-      $B/#\ $W                     _     $B _ _
-     $B/###\ $W      __ _ _ __ ___| |__  $B| (_)_ __  _   ___  __ 
-    $B/#####\ $W    / _' | '__/ __| '_ \ $B| | | '_ \| | | \ \/ /
-   $B/##.-.##\ $W  | (_| | | | (__| | | |$B| | | | | | |_| |>  <  
-  $B/##(   )##\ $W  \__,_|_|  \___|_| |_|$B|_|_|_| |_|\__._/_/\_\\
+      $B/#\ $W                    _     $B _ _
+     $B/###\ $W     __ _ _ __ ___| |__  $B| (_)_ __  _   ___  __ 
+    $B/#####\ $W   / _' | '__/ __| '_ \ $B| | | '_ \| | | \ \/ /
+   $B/##.-.##\ $W | (_| | | | (__| | | |$B| | | | | | |_| |>  <  
+  $B/##(   )##\ $W \__,_|_|  \___|_| |_|$B|_|_|_| |_|\__._/_/\_\\
  $B/#.--   --.#\ $W  
 $B/'           '\ $W> $G$HOSTNAME " > $motd
 fi
@@ -94,7 +103,9 @@ fi
 echo -e "$B SYSTEM STATUS $G:$W $SYSTEM_STATUS         " >> $motd
 echo -e "$B      SERVICES $G:$W $SERVICES_RUNNING running / $FAILED_SERVICES failed " >> $motd
 echo -e "$B        UPTIME $G:$W $upDays days $upHours hours $upMins minutes $upSecs seconds " >> $motd
-echo -e "$B      LOAD AVG $G:$W $LOAD1 | $LOAD5 | $LOAD15              " >> $motd
-echo -e "$B  USERS ACTIVE $G:$W `users | wc -w` users logged in             " >> $motd
+echo -e "$B      LOAD AVG $G:$W $LOAD1 | $LOAD5 | $LOAD15                      " >> $motd
+echo -e "$B  USERS ACTIVE $G:$W `users | wc -w` users logged in                " >> $motd
+echo -e "$B           NTP $G:$W $NTP_SERVICE_STATUS ($TIME_SYNC_STATUS)        " >> $motd
+echo -e "$B   SYSTEM TIME $G:$W $LOCAL_TIME ($TIME_ZONE)                       " >> $motd
 echo -e "$G--------------------------------------------------------------------" >> $motd
 echo -e "$N" >> $motd
